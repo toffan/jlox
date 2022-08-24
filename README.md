@@ -1,8 +1,10 @@
 # jlox
 
+Java implementation of *Crafting Interpreters* by Robert Nystrom.
+
 ## Installation
 
 ```console
-$ javac src/Main.java
-$ java --class-path=src Main
+$ javac src/org/toffan/lox/Lox.java
+$ java --class-path=src org.toffan.lox.Lox
 ```
