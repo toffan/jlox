@@ -1,0 +1,31 @@
+class Base {
+    fun init() {
+        this.a = 5;
+    }
+    fun foo() {
+        print "Base::foo a = ";
+        print this.a;
+    }
+    fun foo() {
+        print "Base::bar a = ";
+        print this.a;
+    }
+}
+
+class Derived < Base {
+    fun init() {
+        super.init();
+        this.a = 10;
+    }
+
+    fun foo() {
+        print "Derived::foo a = ";
+        print this.a;
+    }
+}
+
+fun main() {
+    var d = Derived();
+    d.foo();
+    d.bar();
+}

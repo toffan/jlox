@@ -1,0 +1,32 @@
+fun partial(f, x) {
+    fun p(y) {
+        return f(x, y);
+    }
+    return p;
+}
+
+fun compose(f, g) {
+    fun inner(x) {
+        return f(g(x));
+    }
+    return inner;
+}
+
+fun add(x, y) {
+    return x + y;
+}
+
+fun multiply(x, y) {
+    return x * y;
+}
+
+fun main() {
+    var plus10 = partial(add, 10);
+
+    print plus10(5);  // 15
+    print plus10(-6);  // 4
+
+    var double = partial(multiply, 2);
+
+    print compose(double, plus10)(3);  // 26
+}
