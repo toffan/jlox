@@ -1,12 +1,11 @@
 package org.toffan.lox;
 
+import static org.toffan.lox.TokenType.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
-import static org.toffan.lox.TokenType.*;
 
 class Scanner {
     private final String source;
@@ -50,9 +49,11 @@ class Scanner {
     }
 
     private boolean isAlpha(char c) {
+        // clang-format off
         return ('a' <= c && c <= 'z')
             || ('A' <= c && c <= 'Z')
             || (c == '_');
+        // clang-format on
     }
 
     private boolean isAlphaNumeric(char c) {
@@ -72,63 +73,83 @@ class Scanner {
     private void scanToken() {
         char c = advance();
         switch (c) {
-            case '(': addToken(LEFT_PAREN); break;
-            case ')': addToken(RIGHT_PAREN); break;
-            case '{': addToken(LEFT_BRACE); break;
-            case '}': addToken(RIGHT_BRACE); break;
-            case ',': addToken(COMMA); break;
-            case '.': addToken(DOT); break;
-            case '-': addToken(MINUS); break;
-            case '+': addToken(PLUS); break;
-            case ';': addToken(SEMICOLON); break;
-            case '*': addToken(STAR); break;
-            case '!':
-                addToken(match('=') ? BANG_EQUAL : BANG);
-                break;
-            case '=':
-                addToken(match('=') ? EQUAL_EQUAL : EQUAL);
-                break;
-            case '<':
-                addToken(match('=') ? LESS_EQUAL : LESS);
-                break;
-            case '>':
-                addToken(match('=') ? GREATER_EQUAL : GREATER);
-                break;
-            case '/':
-                if (match('/')) {
-                    // ignore comment until end of line
-                    while (peek() != '\n' && !isAtEnd()) {
-                        advance();
-                    }
-                } else {
-                    addToken(SLASH);
+        case '(':
+            addToken(LEFT_PAREN);
+            break;
+        case ')':
+            addToken(RIGHT_PAREN);
+            break;
+        case '{':
+            addToken(LEFT_BRACE);
+            break;
+        case '}':
+            addToken(RIGHT_BRACE);
+            break;
+        case ',':
+            addToken(COMMA);
+            break;
+        case '.':
+            addToken(DOT);
+            break;
+        case '-':
+            addToken(MINUS);
+            break;
+        case '+':
+            addToken(PLUS);
+            break;
+        case ';':
+            addToken(SEMICOLON);
+            break;
+        case '*':
+            addToken(STAR);
+            break;
+        case '!':
+            addToken(match('=') ? BANG_EQUAL : BANG);
+            break;
+        case '=':
+            addToken(match('=') ? EQUAL_EQUAL : EQUAL);
+            break;
+        case '<':
+            addToken(match('=') ? LESS_EQUAL : LESS);
+            break;
+        case '>':
+            addToken(match('=') ? GREATER_EQUAL : GREATER);
+            break;
+        case '/':
+            if (match('/')) {
+                // ignore comment until end of line
+                while (peek() != '\n' && !isAtEnd()) {
+                    advance();
                 }
-                break;
-            case ' ':
-            case '\t':
-            case '\r':
-                // ignore whitespaces
-                break;
-            case '\n':
-                line++;
-                break;
-            case '"':
-                string();
-                break;
-            default:
-                if (isDigit(c)) {
-                    number();
-                } else if (isAlpha(c)) {
-                    identifier();
-                } else {
-                    Lox.error(line, "Unexpected character '" + c + "'.");
-                }
-                break;
+            } else {
+                addToken(SLASH);
+            }
+            break;
+        case ' ':
+        case '\t':
+        case '\r':
+            // ignore whitespaces
+            break;
+        case '\n':
+            line++;
+            break;
+        case '"':
+            string();
+            break;
+        default:
+            if (isDigit(c)) {
+                number();
+            } else if (isAlpha(c)) {
+                identifier();
+            } else {
+                Lox.error(line, "Unexpected character '" + c + "'.");
+            }
+            break;
         }
     }
 
     private char advance() {
-        char c =source.charAt(current);
+        char c = source.charAt(current);
         current++;
         return c;
     }
@@ -182,7 +203,8 @@ class Scanner {
 
         advance(); // closing '"'
 
-        String value = source.substring(start + 1, current - 1); // remove surrounding '"'
+        String value =
+            source.substring(start + 1, current - 1); // remove surrounding '"'
         addToken(STRING, value);
     }
 
