@@ -6,5 +6,6 @@ Java implementation of *Crafting Interpreters* by Robert Nystrom.
 
 ```console
 $ ./gradlew build 
-$ java --class-path=build/classes/java/main org.toffan.lox.Lox
+$ ./gradlew generate
+$ ./gradlew run --args examples/expr.lox
 ```
