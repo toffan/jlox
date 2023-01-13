@@ -22,8 +22,32 @@ class Parser {
         }
     }
 
+    // expression -> conditional ( "," conditional )*
     private Expr expression() {
-        return equality();
+        Expr expr = conditional();
+
+        while (match(COMMA)) {
+            Token operator = previous();
+            Expr right = conditional();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    // conditional -> equality ( "?" conditional ":" conditional )?
+    private Expr conditional() {
+        Expr expr = equality();
+        if (match(QUESTIONMARK)) {
+            Expr left = conditional();
+            if (match(COLON)) {
+                Expr right = conditional();
+                expr = new Expr.Ternary(expr, left, right);
+            } else {
+                throw error(peek(), "missing ':' in ternary operator");
+            }
+        }
+        return expr;
     }
 
     private Expr equality() {
@@ -102,6 +126,30 @@ class Parser {
             Expr expr = expression();
             consume(RIGHT_PAREN, "Expect ')' after expression.");
             return new Expr.Grouping(expr);
+        }
+
+        if (match(BANG_EQUAL, EQUAL_EQUAL)) {
+            Token operator = previous();
+            comparison(); // consume right-hand operand
+            throw error(operator, "Expect left-hand expression.");
+        }
+
+        if (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
+            Token operator = previous();
+            term(); // consume right-hand operand
+            throw error(operator, "Expect left-hand expression.");
+        }
+
+        if (match(MINUS, PLUS)) {
+            Token operator = previous();
+            factor(); // consume right-hand operand
+            throw error(operator, "Expect left-hand expression.");
+        }
+
+        if (match(SLASH, STAR)) {
+            Token operator = previous();
+            unary(); // consume right-hand operand
+            throw error(operator, "Expect left-hand expression.");
         }
 
         throw error(peek(), "Expect expression.");
