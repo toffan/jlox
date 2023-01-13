@@ -22,8 +22,32 @@ class Parser {
         }
     }
 
+    // expression -> conditional ( "," conditional )*
     private Expr expression() {
-        return equality();
+        Expr expr = conditional();
+
+        while (match(COMMA)) {
+            Token operator = previous();
+            Expr right = conditional();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    // conditional -> equality ( "?" conditional ":" conditional )?
+    private Expr conditional() {
+        Expr expr = equality();
+        if (match(QUESTIONMARK)) {
+            Expr left = conditional();
+            if (match(COLON)) {
+                Expr right = conditional();
+                expr = new Expr.Ternary(expr, left, right);
+            } else {
+                throw error(peek(), "missing ':' in ternary operator");
+            }
+        }
+        return expr;
     }
 
     private Expr equality() {
