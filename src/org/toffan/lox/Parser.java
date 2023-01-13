@@ -128,6 +128,30 @@ class Parser {
             return new Expr.Grouping(expr);
         }
 
+        if (match(BANG_EQUAL, EQUAL_EQUAL)) {
+            Token operator = previous();
+            comparison(); // consume right-hand operand
+            throw error(operator, "Expect left-hand expression.");
+        }
+
+        if (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
+            Token operator = previous();
+            term(); // consume right-hand operand
+            throw error(operator, "Expect left-hand expression.");
+        }
+
+        if (match(MINUS, PLUS)) {
+            Token operator = previous();
+            factor(); // consume right-hand operand
+            throw error(operator, "Expect left-hand expression.");
+        }
+
+        if (match(SLASH, STAR)) {
+            Token operator = previous();
+            unary(); // consume right-hand operand
+            throw error(operator, "Expect left-hand expression.");
+        }
+
         throw error(peek(), "Expect expression.");
     }
 
