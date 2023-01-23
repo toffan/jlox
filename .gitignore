@@ -1,7 +1,7 @@
 *.class
 # generated files
-src/toffan/lox/Expr.java
-
+src/org/toffan/lox/Expr.java
+src/org/toffan/lox/Stmt.java
 
 # Ignore Gradle project-specific cache directory
 .gradle
