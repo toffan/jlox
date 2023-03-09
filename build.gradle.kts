@@ -6,11 +6,11 @@
  * This project uses @Incubating APIs which are subject to change.
  */
 plugins {
-    application 
+    application
 }
 
 application {
-    mainClass.set("org.toffan.lox.Lox") 
+    mainClass.set("org.toffan.lox.Lox")
 }
 
 sourceSets {
