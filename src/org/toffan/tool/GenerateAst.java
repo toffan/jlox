@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GenerateAst {
     public static void main(String[] args) throws IOException {
@@ -25,6 +26,7 @@ public class GenerateAst {
         ));
         defineAst(outputDir, "Stmt", Arrays.asList(
                 "Block        : List<Stmt> statements",
+                "Break        :",
                 "Expression   : Expr expression",
                 "If           : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "Print        : Expr expression",
@@ -50,7 +52,7 @@ public class GenerateAst {
         // The AST classes
         for (String type : types) {
             String className = type.split(":")[0].trim();
-            String fields = type.split(":")[1].trim();
+            String fields = type.split(":", -1)[1].trim();
             defineType(writer, baseName, className, fields);
         }
 
@@ -72,6 +74,10 @@ public class GenerateAst {
 
         // Store parameters in fields
         String[] fields = fieldList.split(", ");
+        fields = Arrays.stream(fields)
+                     .filter(s -> !s.isEmpty())
+                     .toArray(String[] ::new);
+
         for (String field : fields) {
             String name = field.split(" ")[1];
             writer.println("      this." + name + " = " + name + ";");

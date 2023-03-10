@@ -1,0 +1,17 @@
+var a = 0;
+var temp;
+
+for (var b = 1; a < 10000; b = temp + b) {
+  print a;
+  temp = a;
+  a = b;
+}
+
+var cnt = 0;
+while (true) {
+	print cnt;
+	if (cnt > 9) {
+		break;
+	}
+	cnt = cnt + 1;
+}

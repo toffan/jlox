@@ -3,13 +3,13 @@ plugins {
 }
 
 application {
-    mainClass.set("org.toffan.lox.Lox")
+    mainClass.set("org.toffan.tool.GenerateAst")
 }
 
 sourceSets {
     main {
         java {
-            srcDir("src")
+            srcDir(".")
         }
     }
 }
@@ -18,5 +18,5 @@ task("generate", JavaExec::class) {
     classpath = sourceSets["main"].runtimeClasspath
 
     mainClass.set("org.toffan.tool.GenerateAst")
-    args("src/org/toffan/lox")
+    args("../lox")
 }
