@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GenerateAst {
     public static void main(String[] args) throws IOException {
@@ -17,6 +16,7 @@ public class GenerateAst {
         defineAst(outputDir, "Expr", Arrays.asList(
                 "Assign   : Token name, Expr value",
                 "Binary   : Expr left, Token operator, Expr right",
+                "Call     : Expr callee, Token paren, List<Expr> arguments",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
                 "Logical  : Expr left, Token operator, Expr right",
@@ -28,8 +28,10 @@ public class GenerateAst {
                 "Block        : List<Stmt> statements",
                 "Break        :",
                 "Expression   : Expr expression",
+                "Function     : Token name, List<Token> params, List<Stmt> body",
                 "If           : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "Print        : Expr expression",
+                "Return       : Token keyword, Expr value",
                 "Var          : Token name, Expr initializer",
                 "While        : Expr condition, Stmt body"
         ));
