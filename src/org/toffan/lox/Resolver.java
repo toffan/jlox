@@ -7,7 +7,7 @@ import java.util.Stack;
 
 class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     private final Interpreter interpreter;
-    private final Stack<Map<String, Boolean>> scopes = new Stack<>();
+    private final Stack<Map<String, Variable>> scopes = new Stack<>();
     private FunctionType currentFunction = FunctionType.NONE;
     private boolean in_loop = false;
 
@@ -16,6 +16,18 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     }
 
     enum FunctionType { NONE, FUNCTION }
+
+    private class Variable {
+        final Token name;
+        VariableStatus status;
+
+        Variable(Token name, VariableStatus status) {
+            this.name = name;
+            this.status = status;
+        }
+    }
+
+    private enum VariableStatus { DECLARED, DEFINED, ACCESSED }
 
     @Override
     public Void visitBlockStmt(Stmt.Block stmt) {
@@ -103,7 +115,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     @Override
     public Void visitAssignExpr(Expr.Assign expr) {
         resolve(expr.value);
-        resolveLocal(expr, expr.name);
+        resolveLocal(expr, expr.name, false);
         return null;
     }
 
@@ -157,15 +169,21 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitVariableExpr(Expr.Variable expr) {
-        if (!scopes.isEmpty() &&
-            scopes.peek().get(expr.name.lexeme) == Boolean.FALSE) {
-            Lox.error(expr.name,
-                      "Can't read local variable in its own initializer.");
+        if (scopes.isEmpty()) {
+            return null;
+        }
+        Map<String, Variable> scope = scopes.peek();
+        if (scope.containsKey(expr.name.lexeme) &&
+            scope.get(expr.name.lexeme).status == VariableStatus.DECLARED) {
+            Lox.error(
+                expr.name, "Can't read local variable in its own initializer."
+            );
         }
 
-        resolveLocal(expr, expr.name);
+        resolveLocal(expr, expr.name, true);
         return null;
     }
+
     void resolve(List<Stmt> statements) {
         for (Stmt statement : statements) {
             resolve(statement);
@@ -195,36 +213,47 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         currentFunction = enclosingFunction;
     }
     private void beginScope() {
-        scopes.push(new HashMap<String, Boolean>());
+        scopes.push(new HashMap<String, Variable>());
     }
 
     private void endScope() {
-        scopes.pop();
+        Map<String, Variable> scope = scopes.pop();
+
+        for (Map.Entry<String, Variable> entry : scope.entrySet()) {
+            if (entry.getValue().status != VariableStatus.ACCESSED) {
+                Lox.error(entry.getValue().name, "Variable is not used");
+            }
+        }
     }
 
     private void declare(Token name) {
         if (scopes.isEmpty()) {
             return;
         }
-        Map<String, Boolean> scope = scopes.peek();
+        Map<String, Variable> scope = scopes.peek();
         if (scope.containsKey(name.lexeme)) {
             Lox.error(name, "Already a variable with this name in this scope.");
         }
-        scope.put(name.lexeme, false);
+        scope.put(name.lexeme, new Variable(name, VariableStatus.DECLARED));
     }
 
     private void define(Token name) {
         if (scopes.isEmpty()) {
             return;
         }
-        Map<String, Boolean> scope = scopes.peek();
-        scope.put(name.lexeme, true);
+        Map<String, Variable> scope = scopes.peek();
+        scope.put(name.lexeme, new Variable(name, VariableStatus.DEFINED));
     }
 
-    private void resolveLocal(Expr expr, Token name) {
+    private void resolveLocal(Expr expr, Token name, boolean access) {
         for (int i = scopes.size() - 1; i >= 0; --i) {
             if (scopes.get(i).containsKey(name.lexeme)) {
                 interpreter.resolve(expr, scopes.size() - 1 - i);
+                if (access) {
+                    scopes.get(i).put(
+                        name.lexeme, new Variable(name, VariableStatus.ACCESSED)
+                    );
+                }
                 return;
             }
         }
