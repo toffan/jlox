@@ -31,8 +31,9 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             }
 
             @Override
-            public Object call(Interpreter interpreter,
-                               List<Object> arguments) {
+            public Object call(
+                Interpreter interpreter, List<Object> arguments
+            ) {
                 return (double)System.currentTimeMillis() / 1000.0;
             }
 
@@ -198,7 +199,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             }
 
             throw new RuntimeError(
-                expr.operator, "Operands must be two numbers of two strings.");
+                expr.operator, "Operands must be two numbers of two strings."
+            );
         case SLASH:
             checkNumberOperands(expr.operator, left, right);
             if ((double)right == 0.) {
@@ -223,15 +225,17 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
 
         if (!(callee instanceof LoxCallable)) {
-            throw new RuntimeError(expr.paren,
-                                   "Can only call function and classes.");
+            throw new RuntimeError(
+                expr.paren, "Can only call function and classes."
+            );
         }
 
         LoxCallable function = (LoxCallable)callee;
         if (arguments.size() != function.arity()) {
-            throw new RuntimeError(expr.paren, "Expected " + function.arity() +
-                                                   " arguments but got " +
-                                                   arguments.size() + ".");
+            throw new RuntimeError(
+                expr.paren, "Expected " + function.arity() +
+                                " arguments but got " + arguments.size() + "."
+            );
         }
         return function.call(this, arguments);
     }
@@ -314,8 +318,9 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         throw new RuntimeError(operator, "Operand must be a number.");
     }
 
-    private void checkNumberOperands(Token operator, Object left,
-                                     Object right) {
+    private void checkNumberOperands(
+        Token operator, Object left, Object right
+    ) {
         if (left instanceof Double && right instanceof Double) {
             return;
         }

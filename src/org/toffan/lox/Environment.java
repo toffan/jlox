@@ -38,8 +38,9 @@ class Environment {
         } else if (enclosing != null) {
             return enclosing.get(name);
         } else {
-            throw new RuntimeError(name,
-                                   "Undefined variable '" + name.lexeme + "'.");
+            throw new RuntimeError(
+                name, "Undefined variable '" + name.lexeme + "'."
+            );
         }
     }
 
@@ -53,8 +54,9 @@ class Environment {
         } else if (enclosing != null) {
             enclosing.assign(name, value);
         } else {
-            throw new RuntimeError(name,
-                                   "Undefined variable '" + name.lexeme + "'.");
+            throw new RuntimeError(
+                name, "Undefined variable '" + name.lexeme + "'."
+            );
         }
     }
 }

@@ -94,7 +94,8 @@ class Parser {
 
         if (increment != null) {
             body = new Stmt.Block(
-                Arrays.asList(body, new Stmt.Expression(increment)));
+                Arrays.asList(body, new Stmt.Expression(increment))
+            );
         }
 
         if (condition == null) {
