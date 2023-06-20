@@ -1,24 +1,24 @@
 class Base {
-    fun init() {
+    init() {
         this.a = 5;
     }
-    fun foo() {
+    foo() {
         print "Base::foo a = ";
         print this.a;
     }
-    fun foo() {
+    bar() {
         print "Base::bar a = ";
         print this.a;
     }
 }
 
 class Derived < Base {
-    fun init() {
+    init() {
         super.init();
         this.a = 10;
     }
 
-    fun foo() {
+    foo() {
         print "Derived::foo a = ";
         print this.a;
     }
@@ -29,3 +29,5 @@ fun main() {
     d.foo();
     d.bar();
 }
+
+main();
